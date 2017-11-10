@@ -1,5 +1,5 @@
 #python crawl_btcc_trades_history.py <continuous true/false>
-from urllib2 import urlopen
+from urllib.request import urlopen
 import sys
 import json
 import time
@@ -52,15 +52,15 @@ trades_count = 1
 while continuous or trades_count > 0:
     start = time.time()
     url = trades_history_url.format(api, int(time_to_fetch))
-    print '*** Getting trades at',get_formatted_time_string(time_to_fetch),time_to_fetch,'.',
+    print('*** Getting trades at',get_formatted_time_string(time_to_fetch),time_to_fetch,'.', end=' ')
     try:
         trades, code = get_json(url)
     except Exception as e:
-        print e
+        print(e)
         sys.exc_clear()
     else:
         if code != 200:
-            print code
+            print(code)
         else:
             for trade in trades:
                 trades_collection.update_one({'_id': trade['_id']},
@@ -68,7 +68,7 @@ while continuous or trades_count > 0:
             time_to_fetch = get_latest_time(time_to_fetch)
             #time_to_fetch = trades[len(trades)-1]['timestamp']
             trades_count = len(trades)
-            print 'Got',trades_count,'trades.'
+            print('Got',trades_count,'trades.')
         time_delta = time.time() - start
         if time_delta < sleep_between_requests_secs:
             time.sleep(sleep_between_requests_secs - time_delta)

@@ -314,23 +314,23 @@ def make_features(limit, mid_offsets,
     # Book related features:
     books = get_book_df(limit,skip=skip,live=live,theoretical_order=theoretical_order)
     if not live:
-        print 'get book data run time:', (time()-stage)/60, 'minutes'
+        print('get book data run time:', (time()-stage)/60, 'minutes')
         stage = time()
     books['width'], books['mid'] = get_width_and_mid(books)
     if not live:
-        print 'width and mid run time:', (time()-stage)/60, 'minutes'
+        print('width and mid run time:', (time()-stage)/60, 'minutes')
         stage = time()
     for n in mid_offsets:
         books['mid{}'.format(n)] = get_future_mid(books, n)
     if not live:
         books = books.dropna()
-        print 'offset mids run time:', (time()-stage)/60, 'minutes'
+        print('offset mids run time:', (time()-stage)/60, 'minutes')
         stage = time()
     for p in powers:
         books['imbalance{}'.format(p)] = get_power_imbalance(books, 10, p)
         books['adj_price{}'.format(p)] = get_power_adjusted_price(books, 10, p)
     if not live:
-        print 'power calcs run time:', (time()-stage)/60, 'minutes'
+        print('power calcs run time:', (time()-stage)/60, 'minutes')
         stage = time()
     books = books.drop(['bids', 'asks'], axis=1)
 
@@ -355,7 +355,7 @@ def make_features(limit, mid_offsets,
             books['agg{}'.format(n)] = get_aggressor(books, trades)
             books['trend{}'.format(n)] = get_trend(books, trades)
     if not live:
-        print 'trade features run time:', (time()-stage)/60, 'minutes'
+        print('trade features run time:', (time()-stage)/60, 'minutes')
         stage = time()
     books = books.drop('trades_indexes', axis=1)
 
@@ -375,7 +375,7 @@ def make_features(limit, mid_offsets,
     # books = books.drop('ticks_indexes', axis=1)
 
     if not live:
-        print 'make_features run time:', (time() - start) / 60, 'minutes'
+        print('make_features run time:', (time() - start) / 60, 'minutes')
 
     return books
 
@@ -396,7 +396,7 @@ def make_data(limit, skip=0):
     return data
 
 if __name__ == '__main__' and len(sys.argv) == 3:
-    print 'Starting at', get_formatted_time_string(time())
+    print('Starting at', get_formatted_time_string(time()))
     data = make_data(int(sys.argv[1]))
     output_filename = sys.argv[2]
     base_filename = '.'.join(output_filename.split('.')[:-1]) if '.' in output_filename else output_filename
@@ -404,4 +404,4 @@ if __name__ == '__main__' and len(sys.argv) == 3:
     with open(base_filename+".pkl", 'w+') as file:
         pickle.dump(data, file)
     file.close()
-    print 'Ending at', get_formatted_time_string(time())
+    print('Ending at', get_formatted_time_string(time()))

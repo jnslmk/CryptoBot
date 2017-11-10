@@ -61,13 +61,13 @@ def worker(params):
     split_interval = params[2]
     split_start = num*split_interval
     split_end = ((num+1)*split_interval)+5
-    print "%s - Worker %s starting at %s, ending at %s" % (get_formatted_time_string(get_current_time_seconds_utc()), num, split_start, split_end)
+    print("%s - Worker %s starting at %s, ending at %s" % (get_formatted_time_string(get_current_time_seconds_utc()), num, split_start, split_end))
     this_data = data.iloc[split_start:split_end].copy()
     this_data['final'] = get_final(this_data)
     return this_data
 
 def handler(data, split_interval):
-    splits = range(0, cpu_count)
+    splits = list(range(0, cpu_count))
     parallel_arguments = []
     for split in splits:
         parallel_arguments.append([split, data, split_interval])
@@ -81,20 +81,20 @@ def handler(data, split_interval):
     return final_data.sort_index()
 
 if __name__ == '__main__':
-    print "%s - Reading data" % (get_formatted_time_string(get_current_time_seconds_utc()))
+    print("%s - Reading data" % (get_formatted_time_string(get_current_time_seconds_utc())))
     data = pd.DataFrame.from_csv(input_filename, sep='\t')
     #data = data.groupby(data.index).first()
     #data = data.dropna(0)
     data_count = len(data)
     split_interval = data_count / cpu_count
-    print "%s - Data length %s, cpu count %s, therefore split interval %s" % (
-        get_formatted_time_string(get_current_time_seconds_utc()), data_count, cpu_count, split_interval)
+    print("%s - Data length %s, cpu count %s, therefore split interval %s" % (
+        get_formatted_time_string(get_current_time_seconds_utc()), data_count, cpu_count, split_interval))
 
     final_data = handler(data, split_interval)
 
     base_filename = '.'.join(input_filename.split('.')[:-1]) if '.' in input_filename else input_filename
     dump_filename = base_filename+".with_final.tsv"
-    print "%s - Dumping %s records to %s" % (get_formatted_time_string(get_current_time_seconds_utc()), len(final_data), dump_filename)
+    print("%s - Dumping %s records to %s" % (get_formatted_time_string(get_current_time_seconds_utc()), len(final_data), dump_filename))
     final_data.to_csv(dump_filename, sep='\t')
 
-    print "%s - Done" % (get_formatted_time_string(get_current_time_seconds_utc()))
+    print("%s - Done" % (get_formatted_time_string(get_current_time_seconds_utc())))

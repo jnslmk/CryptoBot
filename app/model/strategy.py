@@ -14,7 +14,7 @@ import matplotlib.ticker as mtick
 import matplotlib.dates as mdates
 import pickle
 import sys
-import model
+from . import model
 import pandas as pd
 from time import time
 import multiprocessing
@@ -48,14 +48,14 @@ def fit_and_trade(period, data, features, cols, split, split_percent, prediction
     y_train = y.iloc[:split]*y_multiplied_by
     y_test = y.iloc[split:]
 
-    print 'Data split at {}%. {}/{} records will be used for training/fitting. Rest used for testing.'.format(split_percent,split,len(data))
-    print 'Train data starts at %s (%s), ends at %s (%s)'%(get_formatted_time_string(X_train.index.values[0]),X_train.index.values[0],get_formatted_time_string(X_train.index.values[-1]),X_train.index.values[-1])
-    print 'Test data starts at %s (%s), ends at %s (%s)'%(get_formatted_time_string(X_test.index.values[0]),X_test.index.values[0],get_formatted_time_string(X_test.index.values[-1]),X_test.index.values[-1])
+    print('Data split at {}%. {}/{} records will be used for training/fitting. Rest used for testing.'.format(split_percent,split,len(data)))
+    print('Train data starts at %s (%s), ends at %s (%s)'%(get_formatted_time_string(X_train.index.values[0]),X_train.index.values[0],get_formatted_time_string(X_train.index.values[-1]),X_train.index.values[-1]))
+    print('Test data starts at %s (%s), ends at %s (%s)'%(get_formatted_time_string(X_test.index.values[0]),X_test.index.values[0],get_formatted_time_string(X_test.index.values[-1]),X_test.index.values[-1]))
     train_start = X_train.index.values[0]
     train_end = X_train.index.values[-1]
 
     if do_dump == 'true':
-        print 'Model output file will be:',get_output_model_filename(features, train_start, train_end, prediction_duration)
+        print('Model output file will be:',get_output_model_filename(features, train_start, train_end, prediction_duration))
 
     # from sklearn.model_selection import GridSearchCV
     # param_grid = {'learning_rate': [0.1, 0.05, 0.01, 0.005],
@@ -74,7 +74,7 @@ def fit_and_trade(period, data, features, cols, split, split_percent, prediction
     # exit(0)
 
     if path.isfile(input_model_filename):
-        print "Loading model/regressor from",input_model_filename
+        print("Loading model/regressor from",input_model_filename)
         with open(input_model_filename, 'r') as file:
             regressor = pickle.load(file)
         file.close()
@@ -106,9 +106,9 @@ def fit_and_trade(period, data, features, cols, split, split_percent, prediction
 
         regressor = xgb.XGBClassifier(n_estimators=50,max_depth=3,min_child_weight=5)
 
-        print 'Training started at %s...'%(get_formatted_time_string(time())),
+        print('Training started at %s...'%(get_formatted_time_string(time())), end=' ')
         regressor.fit(X_train.values, y_train.values)
-        print 'Training done at %s'%(get_formatted_time_string(time()))
+        print('Training done at %s'%(get_formatted_time_string(time())))
 
         # print '--Model features importance--'
         # model.get_feature_importances(regressor,cols)
@@ -119,7 +119,7 @@ def fit_and_trade(period, data, features, cols, split, split_percent, prediction
                 pickle.dump(regressor, f)
             f.close()
 
-    print 'r-squared', regressor.score(X_test.values, y_test.values)
+    print('r-squared', regressor.score(X_test.values, y_test.values))
 
     trade(period, X_test.values, y_test.values, X_test.index, regressor, features, cols, split, split_percent, prediction_duration, threshold, threshold_percent, do_dump)
 
@@ -143,14 +143,14 @@ def trade(period, X, y, index, model, features, cols, split, split_percent, pred
         elif pred == 1:
             positive_trades = positive_trades+1
     accurate_percent = float(accurate_count)/float(len(preds))*100
-    print "Total predictions count =",len(preds)
-    print "Accurate total predictions =",accurate_count
-    print "Accurate total predictions percent =",(float(accurate_count)/float(len(preds))*100),"%"
-    print "-1 trades =",negative_trades
-    print "1 trades =",positive_trades
-    print "Total trades =", (negative_trades+positive_trades)
-    print "Accurate trades =",accurate_trades_count
-    print "Accurate trades percent =",(float(accurate_trades_count)/float(negative_trades+positive_trades)*100),"%"
+    print("Total predictions count =",len(preds))
+    print("Accurate total predictions =",accurate_count)
+    print("Accurate total predictions percent =",(float(accurate_count)/float(len(preds))*100),"%")
+    print("-1 trades =",negative_trades)
+    print("1 trades =",positive_trades)
+    print("Total trades =", (negative_trades+positive_trades))
+    print("Accurate trades =",accurate_trades_count)
+    print("Accurate trades percent =",(float(accurate_trades_count)/float(negative_trades+positive_trades)*100),"%")
     return
 
     index_as_dates = []
@@ -186,7 +186,7 @@ def trade(period, X, y, index, model, features, cols, split, split_percent, pred
 
     trades_only = returns[trades != 0]
     if len(trades_only) == 0:
-        print 'No trades were made.'
+        print('No trades were made.')
         return
     mean_return = trades_only.mean()
     accuracy = sum(trades_only > 0)*1./len(trades_only)
@@ -197,10 +197,10 @@ def trade(period, X, y, index, model, features, cols, split, split_percent, pred
     return_text = 'Average Return: {:.4f} %'.format(mean_return)
     trades_text = 'Total Trades: {:d}'.format(len(trades_only))
     accuracy_text = 'Accuracy: {:.2f} %'.format(accuracy*100)
-    print title_text
-    print return_text
-    print trades_text
-    print accuracy_text
+    print(title_text)
+    print(return_text)
+    print(trades_text)
+    print(accuracy_text)
 
     #plt.figure(dpi=100000)
     fig, ax = plt.subplots()
@@ -235,18 +235,18 @@ def parallel(params):
     threshold = params[7]
     threshold_percent = params[8]
 
-    print '-------'
-    print 'Starting iteration. Period:', period, 'Features:', features, 'Split:', split_percent,'Prediction duration:', prediction_duration, 'Threshold:', threshold_percent
+    print('-------')
+    print('Starting iteration. Period:', period, 'Features:', features, 'Split:', split_percent,'Prediction duration:', prediction_duration, 'Threshold:', threshold_percent)
     image_filename = get_file_name(period,features,split_percent,prediction_duration,threshold_percent)
     if path.isfile(image_filename):
-        print 'Image file already exists, skipping...'
+        print('Image file already exists, skipping...')
         return
 
     fit_and_trade(period, data, features, cols, split, split_percent, prediction_duration, threshold, threshold_percent, False)
 
 
 if __name__ == '__main__' and len(sys.argv) == 6:
-    print "Starting at",get_formatted_time_string(time())
+    print("Starting at",get_formatted_time_string(time()))
 
     filename = sys.argv[1]
     split_percent = int(sys.argv[2])
@@ -259,7 +259,7 @@ if __name__ == '__main__' and len(sys.argv) == 6:
 
     threshold = threshold_percent/100
 
-    print "Reading data from disk"
+    print("Reading data from disk")
     if filename_extension == 'pkl':
         with open(filename, 'r') as file:
             data = pickle.load(file)
@@ -270,7 +270,7 @@ if __name__ == '__main__' and len(sys.argv) == 6:
         data.to_csv(base_filename+'.tsv', sep='\t')
 
     if path.isfile(input_cols_filename):
-        print "Loading cols from file",input_cols_filename
+        print("Loading cols from file",input_cols_filename)
         with open(input_cols_filename, 'r') as file:
             cols = pickle.load(file)
         file.close()
@@ -493,7 +493,7 @@ if __name__ == '__main__' and len(sys.argv) == 6:
                     for prediction_duration in [30, 60, 90, 120]:
                         split = int(len(data)*(float(split_percent)/100))
                         parallel_arguments.append([period, data, features, cols, split, split_percent, prediction_duration, threshold, threshold_percent])
-        print 'Trying', len(parallel_arguments), 'combinations on multiple threads'
+        print('Trying', len(parallel_arguments), 'combinations on multiple threads')
         pool = multiprocessing.Pool(multiprocessing.cpu_count()-1) #Leave one CPU core free so system doesn't lock up
         pool.map(parallel, parallel_arguments)
         pool.close()
@@ -503,4 +503,4 @@ if __name__ == '__main__' and len(sys.argv) == 6:
         split = int(len(data)*(float(split_percent)/100))
         fit_and_trade('All', data, 'New', cols, split, split_percent, prediction_duration, threshold, threshold_percent, do_dump)
 
-    print "Done at", get_formatted_time_string(time())
+    print("Done at", get_formatted_time_string(time()))

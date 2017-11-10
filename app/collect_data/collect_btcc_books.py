@@ -1,5 +1,5 @@
 #python collect_btcc_books.py
-from urllib2 import urlopen
+from urllib.request import urlopen
 import time
 import json
 from pymongo import MongoClient
@@ -52,18 +52,18 @@ def get_json(url):
     return json.load(resp, object_hook=format_book_entry), resp.getcode()
 
 
-print 'Running...'
+print('Running...')
 while True:
     start = time.time()
-    print '*** Getting books at',get_formatted_time_string(start),start
+    print('*** Getting books at',get_formatted_time_string(start),start)
     try:
         book, code = get_json(book_url)
     except Exception as e:
-        print e
+        print(e)
         sys.exc_clear()
     else:
         if code != 200:
-            print code
+            print(code)
         else:
             book.pop('date')
             book['_id'] = time.time()

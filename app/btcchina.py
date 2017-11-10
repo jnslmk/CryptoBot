@@ -3,11 +3,11 @@ import re
 import hmac
 import hashlib
 import base64
-import httplib
+import http.client
 import json
 
 
-class BTCChina():
+class BTCChina:
     def __init__(self, access=None, secret=None):
         self.access_key = access
         self.secret_key = secret
@@ -17,7 +17,7 @@ class BTCChina():
     def _make_connection(self):
         if self.conn:
             self.conn.close()
-        self.conn = httplib.HTTPSConnection("api.btcchina.com")
+        self.conn = http.client.HTTPSConnection("api.btcchina.com")
 
     def _get_tonce(self):
         return int(time.time() * 1000000)
@@ -69,7 +69,7 @@ class BTCChina():
             self.conn.request("POST", '/api_trade_v1.php', json.dumps(post_data), headers)
             response = self.conn.getresponse()
         except Exception as e:
-            print "[btcchina.py] ***!!! Exception with httplib. Will reconnect."
+            print("[btcchina.py] ***!!! Exception with httplib. Will reconnect.")
             self._make_connection()
             raise
         else:
@@ -88,8 +88,8 @@ class BTCChina():
                         return resp_dict
             else:
                 # not great error handling....
-                print "status:", response.status
-                print "reason:", response.reason
+                print("status:", response.status)
+                print("reason:", response.reason)
         return None
 
     def get_account_info(self, post_data={}):

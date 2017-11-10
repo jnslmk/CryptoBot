@@ -15,8 +15,8 @@ def cross_validate(X, y, model, window):
     for i in range(1, len(y)/window):
         train_index = np.arange(0, i*window)
         test_index = np.arange(i*window, (i+1)*window)
-        print 'Train index',train_index
-        print 'Test index', test_index
+        print('Train index',train_index)
+        print('Test index', test_index)
         y_train = y.take(train_index)
         y_test = y.take(test_index)
         X_train = X.take(train_index, axis=0)
@@ -24,10 +24,10 @@ def cross_validate(X, y, model, window):
         model.fit(X_train, y_train)
         in_sample_score.append(model.score(X_train, y_train))
         out_sample_score.append(model.score(X_test, y_test))
-        print 'Window', i
-        print 'in-sample score', in_sample_score[-1]
-        print 'out-sample score:', out_sample_score[-1]
-        print '---'
+        print('Window', i)
+        print('in-sample score', in_sample_score[-1])
+        print('out-sample score:', out_sample_score[-1])
+        print('---')
     return model, np.mean(in_sample_score), np.mean(out_sample_score)
 
 
@@ -76,11 +76,11 @@ def grid_search(X, y, split, learn=[.01], samples_leaf=[250, 350, 500],
                 model.fit(X.values[:split], y.values[:split])
                 in_score = model.score(X.values[:split], y.values[:split])
                 out_score = model.score(X.values[split:], y.values[split:])
-                print 'learning_rate: {}, min_samples_leaf: {}, max_depth: {}'.\
-                    format(l, s, d)
-                print 'in-sample score:', in_score
-                print 'out-sample score:', out_score
-                print ''
+                print('learning_rate: {}, min_samples_leaf: {}, max_depth: {}'.\
+                    format(l, s, d))
+                print('in-sample score:', in_score)
+                print('out-sample score:', out_score)
+                print('')
 
 
 def run_models(data, window, model_function, drop_zeros=False):
@@ -93,7 +93,7 @@ def run_models(data, window, model_function, drop_zeros=False):
     in_reg_scores = {}
     out_reg_scores = {}
     for i in range(len(mids)):
-        print 'fitting model #{}...'.format(i+1)
+        print('fitting model #{}...'.format(i+1))
         m = mids[i]
         p = prevs[i]
         if drop_zeros:
@@ -113,11 +113,11 @@ def run_models(data, window, model_function, drop_zeros=False):
         in_reg_scores[m] = in_reg_score
         out_reg_scores[out_reg_score] = m
 
-    print '\nrandom forest regressor r^2:'
+    print('\nrandom forest regressor r^2:')
     for score in sorted(out_reg_scores):
         m = out_reg_scores[score]
-        print 'out-sample', m, score
-        print 'in-sample', m, in_reg_scores[m], '\n'
+        print('out-sample', m, score)
+        print('in-sample', m, in_reg_scores[m], '\n')
 
 
 def get_feature_importances(fitted_model, labels):
@@ -128,7 +128,7 @@ def get_feature_importances(fitted_model, labels):
     importances = fitted_model.feature_importances_
     indexes = np.argsort(importances)[::-1]
     for i in indexes:
-        print '{}: {}'.format(labels[i], importances[i])
+        print('{}: {}'.format(labels[i], importances[i]))
     return labels[indexes]
 
 

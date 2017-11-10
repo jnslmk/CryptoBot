@@ -6,7 +6,7 @@ import multiprocessing
 import pymongo
 import pickle
 import sys
-import features
+from . import features
 import pandas as pd
 from time import time
 
@@ -29,14 +29,14 @@ def get_formatted_time_string(this_time):
 
 def worker(num):
     skip = (each_limit * num) + initial_skip
-    print 'Worker #%s starting starting at record %s, limiting to %s records' % (num,skip,each_limit)
+    print('Worker #%s starting starting at record %s, limiting to %s records' % (num,skip,each_limit))
     if num == cpu_count-1:
         return features.make_data(each_limit, skip)
     else:
         return features.make_data(each_limit + 150, skip)
 
 def handler():
-    splits = range(0, cpu_count)
+    splits = list(range(0, cpu_count))
     pool = multiprocessing.Pool(cpu_count)
     data_array = pool.map(worker, splits)
     pool.close()
@@ -48,15 +48,15 @@ def handler():
 
 if __name__ == '__main__':
     start = time()
-    print 'Starting parallel features gen at', get_formatted_time_string(start)
-    print cpu_count, 'threads will work on', each_limit, 'records each, totalling to', limit, 'records.'
+    print('Starting parallel features gen at', get_formatted_time_string(start))
+    print(cpu_count, 'threads will work on', each_limit, 'records each, totalling to', limit, 'records.')
     data = handler()
-    print 'Done generating. Dumping...'
+    print('Done generating. Dumping...')
     base_filename = '.'.join(output_filename.split('.')[:-1]) if '.' in output_filename else output_filename
     data.to_csv(base_filename+".tsv", sep='\t')
     with open(base_filename+".pkl", 'w+') as file:
         pickle.dump(data, file)
     file.close()
-    print len(data),'Records produced into '+base_filename+".tsv and "+base_filename+".pkl"
-    print 'Ending parallel features gen at', get_formatted_time_string(time())
-    print 'Took', (time() - start) / 60, 'minutes to run.'
+    print(len(data),'Records produced into '+base_filename+".tsv and "+base_filename+".pkl")
+    print('Ending parallel features gen at', get_formatted_time_string(time()))
+    print('Took', (time() - start) / 60, 'minutes to run.')

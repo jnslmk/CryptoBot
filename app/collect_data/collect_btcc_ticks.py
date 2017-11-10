@@ -1,5 +1,5 @@
 #python collect_btcc_ticks.py
-from urllib2 import urlopen
+from urllib.request import urlopen
 import time
 import json
 from pymongo import MongoClient
@@ -34,20 +34,20 @@ def get_json(url):
     # tick['sell'] = float(entry['sell'])
     return entry, resp.getcode()
 
-print 'Running...'
+print('Running...')
 while True:
     start = time.time()
-    print '*** Getting tick at',get_formatted_time_string(start),start,'.',
+    print('*** Getting tick at',get_formatted_time_string(start),start,'.', end=' ')
     try:
         tick, code = get_json(tick_url)
     except Exception as e:
-        print e
+        print(e)
         sys.exc_clear()
     else:
         if code != 200:
-            print code
+            print(code)
         else:
-            print 'Gotten it for',get_formatted_time_string(tick['_id']),tick['_id']
+            print('Gotten it for',get_formatted_time_string(tick['_id']),tick['_id'])
             ticks_collection.update_one({'_id': tick['_id']},
                                          {'$setOnInsert': tick}, upsert=True)
             time_delta = time.time()-start
